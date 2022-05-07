@@ -57,7 +57,7 @@ func checkIsEqualScalar(t *testing.T, name string, expected []byte, actual *r255
 
 func TestECVRFRoundTrip(t *testing.T) {
 	alpha := []byte("af82")
-	sk, err := NewKey(hd(t, "3431c2b03533e280b23232e280b34e2c3132c2b03238e280b23131e280b34500"))
+	sk, err := NewPrivateKey(hd(t, "3431c2b03533e280b23232e280b34e2c3132c2b03238e280b23131e280b34500"))
 	require.NoError(t, err)
 
 	pi, err := sk.Prove(alpha)
@@ -97,7 +97,7 @@ func TestECVRFRISTRETTO255SHA512(t *testing.T) {
 	}}
 	for i, tv := range tests {
 		t.Run(fmt.Sprintf("test vector %d", i), func(t *testing.T) {
-			sk, err := NewKey(tv.sk)
+			sk, err := NewPrivateKey(tv.sk)
 			require.NoError(t, err)
 			checkIsEqualScalar(t, "sk", tv.sk, sk.x)
 			checkIsEqualElement(t, "pk", tv.pk, sk.Y.y)
@@ -146,7 +146,7 @@ func TestECVRFRISTRETTO255SHA512(t *testing.T) {
 			// below: almost the same as round trip test
 			p2, err := sk.Prove(tv.alpha)
 			require.NoError(t, err)
-			require.True(t, bytes.Equal(p1.Bytes(), p2.Bytes()))
+			require.True(t, bytes.Equal(p2.Bytes(), p1.Bytes()))
 			require.True(t, bytes.Equal(p2.Bytes(), tv.pi))
 			beta, err := p2.Hash()
 			require.NoError(t, err)
@@ -154,8 +154,8 @@ func TestECVRFRISTRETTO255SHA512(t *testing.T) {
 
 			beta2, err := sk.Y.Verify(p2, tv.alpha)
 			require.NoError(t, err)
-			require.True(t, bytes.Equal(beta2, tv.beta))
 			require.True(t, bytes.Equal(beta2, beta))
+			require.True(t, bytes.Equal(beta2, tv.beta))
 		})
 	}
 }

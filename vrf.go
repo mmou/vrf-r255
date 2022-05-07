@@ -38,8 +38,8 @@ type PrivateKey struct {
 	x *r255.Scalar
 }
 
-// NewKey returns a PrivateKey from given bytes
-func NewKey(sk []byte) (*PrivateKey, error) {
+// NewPrivateKey returns a PrivateKey from given bytes
+func NewPrivateKey(sk []byte) (*PrivateKey, error) {
 	s, err := newScalar(sk)
 	if err != nil {
 		return nil, err
@@ -73,7 +73,7 @@ func newScalar(in []byte) (*r255.Scalar, error) {
 // Challenge is a VRF challenge
 type Challenge = r255.Scalar
 
-// takes first 16 bytes of in to make Challenge
+// newChallenge takes first 16 bytes of in to make Challenge
 func newChallenge(in []byte) (*Challenge, error) {
 	tmp := make([]byte, 32-cLen)
 	tmp = append(in[:cLen], tmp...)
@@ -156,7 +156,7 @@ func NewProof(pi []byte) (*Proof, error) {
 
 	// s_string = pi_string[ptLen+cLen]...pi_string[ptLen+cLen+qLen-1]
 	var ss = make([]byte, qLen)
-	copy(ss, pi[ptLen+cLen:ptLen+cLen+qLen]) // must copy
+	copy(ss, pi[ptLen+cLen:ptLen+cLen+qLen])
 
 	// Gamma = string_to_point(gamma_string)
 	// if Gamma = "INVALID" output "INVALID" and stop
